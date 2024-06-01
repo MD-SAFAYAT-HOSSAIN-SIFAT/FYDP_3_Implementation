@@ -1,0 +1,185 @@
+<!-- <!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload File</title>
+</head>
+<body>
+    <h1>Upload PDF or Image File</h1>
+    <form action="/" method="post" enctype="multipart/form-data">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+    </form>
+</body>
+</html> -->
+
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Upload File</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: url('aa.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            color: #fff;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 32px;
+            text-shadow: 2px 2px 4px rgb(0, 0, 0);
+        }
+
+        .container {
+            background-color: rgba(0, 0, 0, 0.5);
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgb(0, 0, 0);
+            text-align: center;
+            width: 100%;
+            max-width: 500px;
+        }
+
+        input[type="file"], input[type="submit"], button {
+            margin: 10px 0;
+            padding: 10px;
+            border: 2px solid #007BFF;
+            border-radius: 5px;
+            background-color: #fff;
+            color: #333;
+            font-size: 16px;
+        }
+
+        input[type="submit"], button {
+            background-color: #007BFF;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="submit"]:hover, button:hover {
+            background-color: #0056b3;
+        }
+
+        #drop-area {
+            border: 2px dashed #007BFF;
+            border-radius: 5px;
+            padding: 20px;
+            margin: 10px 0;
+            color: #007BFF;
+            cursor: pointer;
+        }
+
+        #video-container {
+            display: none;
+            margin: 20px 0;
+        }
+
+        video {
+            width: 100%;
+            border-radius: 5px;
+        }
+    </style>
+</head>
+<body>
+    <h1 style="background-color: #134428;width: 400px;height: 50px;text-align: center;">Upload PDF or Image File</h1>
+    <div class="container">
+        <div id="drop-area">
+            Drag & Drop Files Here
+        </div>
+        <p>or</p>
+        <form action="/" method="post" enctype="multipart/form-data">
+            <input type="file" name="file" accept=".pdf, image/*" id="fileInput">
+            <input type="submit" value="Upload">
+        </form>
+        <button id="cameraButton">Capture from Camera</button>
+        <div id="video-container">
+            <video id="video" autoplay></video>
+            <button id="captureButton">Capture</button>
+            <canvas id="canvas" style="display:none;"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Drag and Drop functionality
+        const dropArea = document.getElementById('drop-area');
+        dropArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropArea.style.borderColor = '#0056b3';
+        });
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.style.borderColor = '#007BFF';
+        });
+        dropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropArea.style.borderColor = '#007BFF';
+            const files = event.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        function handleFiles(files) {
+            const formData = new FormData();
+            for (const file of files) {
+                formData.append('file', file);
+            }
+            fetch('/', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+              .then(data => console.log(data))
+              .catch(error => console.error(error));
+        }
+
+        // Camera access functionality
+        const cameraButton = document.getElementById('cameraButton');
+        const videoContainer = document.getElementById('video-container');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('captureButton');
+
+        cameraButton.addEventListener('click', () => {
+            videoContainer.style.display = 'block';
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                })
+                .catch(error => {
+                    console.error('Error accessing camera: ', error);
+                });
+        });
+
+        captureButton.addEventListener('click', () => {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob(blob => {
+                const formData = new FormData();
+                formData.append('file', blob, 'capture.png');
+                fetch('/', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => response.json())
+                  .then(data => console.log(data))
+                  .catch(error => console.error(error));
+            }, 'image/png');
+        });
+    </script>
+</body>
+</html>

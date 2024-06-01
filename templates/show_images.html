@@ -1,0 +1,187 @@
+ <!-- <!doctype html>
+ <html lang="en">
+ <head>
+     <meta charset="utf-8">
+     <title>Show Images</title>
+     <style>
+         body, html {
+             margin: 0;
+             padding: 0;
+             height: 100%;
+             width: 100%;
+             display: flex;
+             flex-direction: column;
+             align-items: center;
+             justify-content: center;
+         }
+ 
+         .navigation {
+             display: flex;
+             justify-content: space-around;
+             width: 100%;
+             margin-top: 20px;
+         }
+ 
+         .navigation button {
+             font-size: 20px;
+             padding: 10px 20px;
+             cursor: pointer;
+         }
+ 
+         #image-container {
+             display: flex;
+             justify-content: center;
+             align-items: center;
+             height: 80%;
+             width: 100%;
+         }
+ 
+         #displayed-image {
+             max-width: 100%;
+             max-height: 100%;
+         }
+     </style>
+ </head>
+ <body>
+     <h1>Converted Images</h1>
+     {% if images %}
+         <div id="image-container">
+             <img src="{{ url_for('static', filename=images[0]) }}" id="displayed-image">
+         </div>
+         <div class="navigation">
+             <button onclick="navigate('prev')">Previous</button>
+             <button onclick="navigate('next')">Next</button>
+             <button onclick="infer()">Infer</button>
+         </div>
+     {% endif %}
+     <script>
+         var images = {{ images|tojson }};
+         var currentIndex = 0;
+         
+         function navigate(direction) {
+             if (direction === 'next' && currentIndex < images.length - 1) {
+                 currentIndex++;
+             } else if (direction === 'prev' && currentIndex > 0) {
+                 currentIndex--;
+             }
+             document.getElementById('displayed-image').src = '/static/' + images[currentIndex];
+         }
+ 
+         function infer() {
+             var imagePath = images[currentIndex];
+             window.open('/infer_image/' + encodeURIComponent(imagePath), '_blank');
+         }
+     </script>
+ </body>
+ </html>
+
+
+
+  
+
+ -->
+
+
+
+
+
+ <!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Show Images</title>
+    <style>
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            width: 100%;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            background: url('aa.jpg') no-repeat center center fixed;
+            background-size: cover;
+            font-family: Arial, sans-serif;
+            color: #fff;
+        }
+
+        h1 {
+            margin-bottom: 20px;
+            font-size: 32px;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+        }
+
+        .navigation {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            margin-top: 20px;
+        }
+
+        .navigation button {
+            font-size: 20px;
+            padding: 10px 20px;
+            cursor: pointer;
+            background-color: #007BFF;
+            border: none;
+            border-radius: 5px;
+            color: white;
+            transition: background-color 0.3s ease;
+        }
+
+        .navigation button:hover {
+            background-color: #0056b3;
+        }
+
+        #image-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 80%;
+            width: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            border-radius: 10px;
+            padding: 20px;
+        }
+
+        #displayed-image {
+            max-width: 100%;
+            max-height: 100%;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.3);
+        }
+    </style>
+</head>
+<body>
+    <h1>Converted Images</h1>
+    {% if images %}
+        <div id="image-container">
+            <img src="{{ url_for('static', filename=images[0]) }}" id="displayed-image">
+        </div>
+        <div class="navigation">
+            <button onclick="navigate('prev')">Previous</button>
+            <button onclick="navigate('next')">Next</button>
+            <button onclick="infer()">Infer</button>
+        </div>
+    {% endif %}
+    <script>
+        var images = {{ images|tojson }};
+        var currentIndex = 0;
+        
+        function navigate(direction) {
+            if (direction === 'next' && currentIndex < images.length - 1) {
+                currentIndex++;
+            } else if (direction === 'prev' && currentIndex > 0) {
+                currentIndex--;
+            }
+            document.getElementById('displayed-image').src = '/static/' + images[currentIndex];
+        }
+
+        function infer() {
+            var imagePath = images[currentIndex];
+            window.open('/infer_image/' + encodeURIComponent(imagePath), '_blank');
+        }
+    </script>
+</body>
+</html>

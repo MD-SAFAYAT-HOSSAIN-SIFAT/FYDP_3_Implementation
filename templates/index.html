@@ -1,0 +1,182 @@
+<!-- <!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Upload File</title>
+</head>
+<body>
+    <h1>Upload File</h1>
+    <form method="post" enctype="multipart/form-data" action="/uploader">
+        <input type="file" name="file">
+        <input type="submit" value="Upload">
+    </form>
+</body>
+</html> -->
+
+
+
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <title>Upload File</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background: url('aa.jpg') no-repeat center center fixed;
+            background-size: cover;
+            
+        }
+        .container {
+            background-color: #ffffff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            max-width: 500px;
+            /* max-height: 400px;
+            height: 100%; */
+            width: 100%;
+           
+            text-align: center;
+        }
+        .header {
+            background-color: #134428;
+            color: #ffffff;
+            padding: 10px;
+            border-radius: 8px 8px 0 0;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        h1 {
+            font-size: 20px;
+            color: #333333;
+            margin: 20px 0;
+        }
+        input[type="file"], input[type="submit"], button {
+            margin: 10px 0;
+        }
+        input[type="submit"], button {
+            background-color: #007BFF;
+            color: #ffffff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        input[type="submit"]:hover, button:hover {
+            background-color: #0056b3;
+        }
+        #drop-area {
+            border: 2px dashed #007BFF;
+            border-radius: 4px;
+            padding: 20px;
+            margin: 20px 0;
+            color: #007BFF;
+            cursor: pointer;
+        }
+        #video-container {
+            display: none;
+            margin: 20px 0;
+        }
+        video {
+            width: 100%;
+            border-radius: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            Complex Bengali Document Layout Analysis System
+        </div>
+        <h1>Upload File</h1>
+        <div id="drop-area">
+            Drag & Drop Files Here
+        </div>
+        <p>or</p>
+        <form method="post" enctype="multipart/form-data" action="/uploader">
+            <input type="file" name="file" id="fileInput">
+            <input type="submit" value="Upload">
+        </form>
+        <button id="cameraButton">Capture from Camera</button>
+        <div id="video-container">
+            <video id="video" autoplay></video>
+            <button id="captureButton">Capture</button>
+            <canvas id="canvas" style="display:none;"></canvas>
+        </div>
+    </div>
+
+    <script>
+        // Drag and Drop functionality
+        const dropArea = document.getElementById('drop-area');
+        dropArea.addEventListener('dragover', (event) => {
+            event.preventDefault();
+            dropArea.style.borderColor = '#0056b3';
+        });
+        dropArea.addEventListener('dragleave', () => {
+            dropArea.style.borderColor = '#007BFF';
+        });
+        dropArea.addEventListener('drop', (event) => {
+            event.preventDefault();
+            dropArea.style.borderColor = '#007BFF';
+            const files = event.dataTransfer.files;
+            handleFiles(files);
+        });
+
+        function handleFiles(files) {
+            const formData = new FormData();
+            for (const file of files) {
+                formData.append('file', file);
+            }
+            fetch('/uploader', {
+                method: 'POST',
+                body: formData
+            }).then(response => response.json())
+              .then(data => console.log(data))
+              .catch(error => console.error(error));
+        }
+
+        // Camera access functionality
+        const cameraButton = document.getElementById('cameraButton');
+        const videoContainer = document.getElementById('video-container');
+        const video = document.getElementById('video');
+        const canvas = document.getElementById('canvas');
+        const captureButton = document.getElementById('captureButton');
+
+        cameraButton.addEventListener('click', () => {
+            videoContainer.style.display = 'block';
+            navigator.mediaDevices.getUserMedia({ video: true })
+                .then(stream => {
+                    video.srcObject = stream;
+                })
+                .catch(error => {
+                    console.error('Error accessing camera: ', error);
+                });
+        });
+
+        captureButton.addEventListener('click', () => {
+            const context = canvas.getContext('2d');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            canvas.toBlob(blob => {
+                const formData = new FormData();
+                formData.append('file', blob, 'capture.png');
+                fetch('/uploader', {
+                    method: 'POST',
+                    body: formData
+                }).then(response => response.json())
+                  .then(data => console.log(data))
+                  .catch(error => console.error(error));
+            }, 'image/png');
+        });
+    </script>
+</body>
+</html>
